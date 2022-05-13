@@ -1,11 +1,12 @@
 import { useQuery } from "react-query";
 import clsx from "clsx";
 import axios from "axios";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import Logout from "~/components/Logout";
+import { getUserId } from "~/utils/auth.server";
 
 type Pokemon = {
   name: string;
@@ -88,7 +89,7 @@ const PokemonCard = ({ name, url }: Pokemon) => {
   );
 
   const res = data?.data;
-
+  const handleAddPokemon = (pokemonId: string) => {};
   return (
     <li
       key={name}
@@ -128,6 +129,21 @@ const PokemonCard = ({ name, url }: Pokemon) => {
       <Link to={name} className="mx-auto my-2">
         <div className={"button"}> Infos </div>
       </Link>
+      <div className="gotIt mx-auto my-2">
+        <form method="">
+          {/*  onChange={(e) => setSearch(e.target.value)} */}
+          <button
+            value={res?.id}
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              console.log(e.target.value);
+            }}
+          >
+            Catch him
+          </button>
+        </form>
+      </div>
     </li>
   );
 };
