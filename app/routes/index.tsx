@@ -198,7 +198,7 @@ export default function Index() {
         {previousContext && (
           <div className="menu_Button">
             <Link
-              to={`/pokedex?offset=${previousContext.offset}&limit=${previousContext.limit}`}
+              to={`/?offset=${previousContext.offset}&limit=${previousContext.limit}`}
             >
               Précédent
             </Link>
@@ -208,7 +208,7 @@ export default function Index() {
         {nextContext && (
           <div className="menu_Button">
             <Link
-              to={`/pokedex?offset=${nextContext.offset}&limit=${nextContext.limit}`}
+              to={`/?offset=${nextContext.offset}&limit=${nextContext.limit}`}
             >
               Suivant
             </Link>
