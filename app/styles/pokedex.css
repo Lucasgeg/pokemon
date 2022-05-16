@@ -1,0 +1,207 @@
+.button {
+  background: #15d798;
+  border: 1px solid #556699;
+  border-radius: 11px;
+  padding: 10px 22px;
+  color: #ffffff;
+  display: inline-block;
+  font: normal bold 13px/1 "Noto Sans", sans-serif;
+  text-align: center;
+  text-shadow: 1px 1px #000000;
+}
+.normal {
+  background-color: #a8a77a;
+}
+.fire {
+  background-color: #ee8130;
+}
+.water {
+  background-color: #6390f0;
+}
+.electric {
+  background-color: #f7d02c;
+}
+.grass {
+  background-color: #7ac74c;
+}
+.ice {
+  background-color: #96d9d6;
+}
+.fighting {
+  background-color: #c22e28;
+}
+.poison {
+  background-color: #a33ea1;
+}
+.ground {
+  background-color: #e2bf65;
+}
+.flying {
+  background-color: #a98ff3;
+}
+.psychic {
+  background-color: #f95587;
+}
+.bug {
+  background-color: #a6b91a;
+}
+.rock {
+  background-color: #b6a136;
+}
+.ghost {
+  background-color: #735797;
+}
+.dragon {
+  background-color: #6f35fc;
+}
+.dark {
+  background-color: #705746;
+}
+.steel {
+  background-color: #b7b7ce;
+}
+.fairy {
+  background-color: #d685ad;
+}
+.normal .button {
+  background-color: #72725e;
+}
+.fire .button {
+  background-color: #e1680b;
+}
+.water .button {
+  background-color: #215ad5;
+}
+.electric .button {
+  background-color: #c9a209;
+}
+.grass .button {
+  background-color: #439614;
+}
+.ice .button {
+  background-color: #dfedec;
+}
+.fighting .button {
+  background-color: #9e0904;
+}
+.poison .button {
+  background-color: #681266;
+}
+.ground .button {
+  background-color: #967625;
+}
+.flying .button {
+  background-color: #694bba;
+}
+.psychic .button {
+  background-color: #e21f5a;
+}
+.bug .button {
+  background-color: #7e8e03;
+}
+.rock .button {
+  background-color: #a08813;
+}
+.ghost .button {
+  background-color: #55397a;
+}
+.dragon .button {
+  background-color: #4917c8;
+}
+.dark .button {
+  background-color: #533928;
+}
+.steel .button {
+  background-color: #8484ac;
+}
+.fairy .button {
+  background-color: #b15483;
+}
+.namenormal {
+  color: #72725e;
+}
+.namefire {
+  color: #e1680b;
+}
+.namewater {
+  color: #215ad5;
+}
+.nameelectric {
+  color: #c9a209;
+}
+.namegrass {
+  color: #439614;
+}
+.nameice {
+  color: #dfedec;
+}
+.namefighting {
+  color: #9e0904;
+}
+.namepoison {
+  color: #681266;
+}
+.nameground {
+  color: #967625;
+}
+.nameflying {
+  color: #694bba;
+}
+.namepsychic {
+  color: #e21f5a;
+}
+.namebug {
+  color: #7e8e03;
+}
+.namerock {
+  color: #a08813;
+}
+.nameghost {
+  color: #55397a;
+}
+.namedragon {
+  color: #4917c8;
+}
+.namedark {
+  color: #533928;
+}
+.namesteel {
+  color: #8484ac;
+}
+.namefairy {
+  color: #b15483;
+}
+
+.menu_Button {
+  margin: 2px 5px;
+  box-shadow: inset 0px 1px 0px 0px #bbdaf7;
+  background: linear-gradient(to bottom, #79bbff 5%, #378de5 100%);
+  background-color: #79bbff;
+  border-radius: 6px;
+  border: 1px solid #84bbf3;
+  display: inline-block;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: Arial;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 6px 24px;
+  text-decoration: none;
+  text-shadow: 0px 1px 0px #528ecc;
+}
+.menu_Button:hover {
+  background: linear-gradient(to bottom, #378de5 5%, #79bbff 100%);
+  background-color: #378de5;
+}
+.menu_Button:active {
+  position: relative;
+  top: 1px;
+}
+.sub_Menu {
+  width: max-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.main_color{
+  background-color: rgb(250, 204, 21) ;
+}

@@ -2,12 +2,14 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useState } from "react";
+import { Link } from "@remix-run/react";
 import { getUser, login, register } from "~/utils/auth.server";
 import type { Forms } from "~/utils/types.server";
 import { validatePassword, validateUserName } from "~/utils/validators.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return (await getUser(request)) ? redirect("/pokedex") : null;
+
+  return (await getUser(request)) ? redirect("/") : null;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -72,11 +74,11 @@ export default function Login() {
       </button>
       {action == "login" ? (
         <h1 className="text-center">
-          Connectez vous et complétez votre pokedex!
+          Connect and complete your pokedex!
         </h1>
       ) : (
         <h1 className="text-center">
-          Inscrivez vous et obtenez votre Pokédex!
+          Subscribe and we offer you a free pokedex!
         </h1>
       )}
       <form
@@ -110,6 +112,7 @@ export default function Login() {
           {action == "login" ? "Se connecter" : "S'inscrire"}
         </button>
       </form>
+      <Link to={`/`} >I just want to take a look</Link>
     </div>
   );
 }

@@ -9,16 +9,20 @@ import Logout from "~/components/Logout";
 import { getUserId } from "~/utils/auth.server";
 import {
   addPokemonToUser,
+  getUserName,
+  pokemonGet,
   removePokemonFromUser,
-  userHaveThePokemon,
+
 } from "~/utils/users.server";
 
 type Pokemon = {
   name: string;
   url: string;
-  id: number;
+  id: string;
   sprite: string | null;
   type: string;
+  catchedPokemons: String[] | undefined | null
+  userName : string | null | undefined
 };
 type PokePagination = { offset: string | null; limit: string | null };
 type LoaderData = {
@@ -26,8 +30,11 @@ type LoaderData = {
   currentPage: String;
   nextContext: PokePagination | null;
   previousContext: PokePagination | null;
+  catchedPokemons: String[] | undefined | null;
+  userName: string |undefined |null
 };
 type PokemonDetailResponse = {
+  name: string;
   id: number;
   sprites: {
     front_default: string;
@@ -52,62 +59,70 @@ const getPaginationInfo = (url: string | null) => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const { searchParams } = new URL(request.url);
+  const userId= await getUserId(request)
   const limit = searchParams.get("limit");
   const offset = searchParams.get("offset");
   const currentPage = `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`;
   const {
     data: { results, next, previous },
   } = await axios.get(currentPage);
-  const pokemonList: Pokemon[] = results;
-  /* const promises = [];
-  for (const pokemon of pokemonList) {
-    promises.push(axios.get(pokemon.url));
+  const pokemonList: Pokemon[] = results ;
+  let catchedPokemons
+  let userName
+  if(userId){
+    catchedPokemons = await pokemonGet(userId, pokemonList.map(({ name }) => name) )
+    userName = await getUserName(userId)
   }
-  const toto = await Promise.all(promises);
-  toto.forEach((element) => {
-    const index = pokemonList.findIndex(
-      (pokemon) => pokemon.name === element.data.name
-    );
-    if (index == -1) return;
-    pokemonList[index].id = element.data.id;
-    pokemonList[index].sprite =
-      element.data.sprites.other.dream_world.front_default;
-    pokemonList[index].type = element.data.types[0].type.name;
-  }); */
   const nextContext = getPaginationInfo(next);
   const previousContext = getPaginationInfo(previous);
 
   const data: LoaderData = {
+    userName,
     currentPage,
     pokemonList,
     nextContext,
     previousContext,
+    catchedPokemons
   };
 
   return json(data);
 };
 
 export async function action({ request }: any) {
+  
   const userId = await getUserId(request);
   const body = await request.formData();
-  const pokemonId = body._fields.pokemonId[0];
-  if (typeof userId !== "string" || typeof pokemonId !== "string") {
+  const pokemonName = body._fields.pokemonName[0];
+  const action = body._fields.action[0];
+  
+  if (typeof userId !== "string" || typeof pokemonName !== "string") {
     return json(
-      { error: "userId or pokemonId is inconrrect" },
+      { error: "userId or pokemonId is incorrect" },
       { status: 400 }
     );
   }
-  return await addPokemonToUser(userId, pokemonId);
+  switch(action){
+    case "delete":{
+      return await removePokemonFromUser(userId, pokemonName)
+    }
+    case "add":{
+      return await addPokemonToUser(userId, pokemonName)
+    }
+    default:{
+      throw new Error("Unexpected error happen")
+    }
+  }
 }
 
-const PokemonCard = ({ name, url }: Pokemon) => {
+const PokemonCard = ({ name, url, catchedPokemons, userName }: Pokemon) => {  
   const fetcher = useFetcher();
   const { data, isLoading } = useQuery(
     ["detail", name],
     (): Promise<{ data: PokemonDetailResponse }> => axios.get(url)
   );
-
   const res = data?.data;
+  const hasBeenCatched = catchedPokemons?.includes(name);
+ 
   return (
     <li
       key={name}
@@ -134,7 +149,7 @@ const PokemonCard = ({ name, url }: Pokemon) => {
       <br />
       <div className=" w-3/4 p-2 cardInfo mx-auto text-center bg-slate-300">
         <p className=" text-center">Name:</p>
-        <p className=" first-letter:uppercase">{name}</p>
+        <p className=" first-letter:uppercase font-pokemon">{name}</p>
         <br />
         {!isLoading && (
           <>
@@ -147,43 +162,57 @@ const PokemonCard = ({ name, url }: Pokemon) => {
       <Link to={`/pokedex/${name}`} className="mx-auto my-2">
         <div className={"button"}> Infos </div>
       </Link>
+      {userName ? 
+      
       <div className="gotIt mx-auto my-2">
-        <form method="">
+        <form>
           {/*  onChange={(e) => setSearch(e.target.value)} */}
-
+          
           <button
+            className="button"
             type="submit"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault();
-              if (!res || !res.id) return;
+              if (!res || !res.name) return
               fetcher.submit(
-                { pokemonId: res.id.toString() },
-                { method: "post" }
+                { pokemonName: res.name.toString(), action: hasBeenCatched? "delete" : "add"},
+                { method: "post"  }
+                
               );
             }}
           >
-            Catch him
+            {hasBeenCatched ? 'Free him' : 'Catch Him'}
           </button>
         </form>
-      </div>
+      </div> : null
+      }
     </li>
   );
 };
 
+//////////////////////////////////////////////MAIN PAGE/////////////////////////////////////////////////////////////
+
 export default function Index() {
-  const { pokemonList, nextContext, previousContext } =
+  const { pokemonList, nextContext, previousContext, catchedPokemons, userName } =
     useLoaderData<LoaderData>();
   const [search, setSearch] = useState("");
-
+ 
+  
   return (
-    <div className=" w-full flex flex-col">
-      <Logout />
-      <h1 className=" text-center my-5 py-1">Index</h1>
+    <div className=" w-full flex flex-col font-comfortaa font-semibold ">
+      <Logout userName={userName} />
+
+      <div className="border-8 border-red-600 rounded-full w-3/4 mx-auto header  bg-orange-200 text-lg mb-3 p-3 md:mt-10">
+        {userName ?
+                <h1 className="text-center">Hello <div className=" first-letter:uppercase font-pokemon">{userName}</div> let's complete your Pokedex!</h1> 
+
+         : <h1 className=" text-center  "> Hello dear trainer! <br /> Looking for information? <br />You can subscribe if you want to get your own pokedex! </h1> }
+         </div>
       {/* Ajout d'une barre de recherche */}
       <form className=" text-center mx-auto" action={`/pokedex/${search}`}>
         <input
           className=" text-center mx-auto"
-          placeholder="Type a pokemon name or ID"
+          placeholder="pokemon name or ID"
           onChange={(e) => setSearch(e.target.value)}
         />{" "}
         <br />
@@ -191,7 +220,7 @@ export default function Index() {
       </form>
       <ul className=" grid grid-cols-12 gap-4 px-2 md:px-4 mt-5">
         {pokemonList.map((p) => (
-          <PokemonCard key={p.name} {...p} />
+          <PokemonCard key={p.name} {...p} catchedPokemons={catchedPokemons} userName={userName} />
         ))}
       </ul>
       <div className="sub_Menu mt-5">
