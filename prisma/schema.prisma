@@ -19,6 +19,7 @@ model User {
   // pokemonIds String[]  @db.ObjectId
   // pokemons   Pokemon[] @relation(fields: [pokemonIds], references: [id])
   pokemonNames String[]
+  pokemonIds   Int[]
 }
 
 // model Pokemon {

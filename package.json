@@ -19,6 +19,7 @@
     "@vercel/node": "^1.14.0",
     "axios": "^0.27.2",
     "clsx": "^1.1.1",
+    "lottie-react": "^2.2.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-query": "^3.39.0"

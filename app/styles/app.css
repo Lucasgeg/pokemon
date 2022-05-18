@@ -675,9 +675,9 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(96 165 250 / var(--tw-bg-opacity));
 }
 
-.bg-amber-500{
+.bg-red-800{
   --tw-bg-opacity: 1;
-  background-color: rgb(245 158 11 / var(--tw-bg-opacity));
+  background-color: rgb(153 27 27 / var(--tw-bg-opacity));
 }
 
 .bg-amber-200{
@@ -690,9 +690,9 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(250 204 21 / var(--tw-bg-opacity));
 }
 
-.bg-red-800{
+.bg-red-700{
   --tw-bg-opacity: 1;
-  background-color: rgb(153 27 27 / var(--tw-bg-opacity));
+  background-color: rgb(185 28 28 / var(--tw-bg-opacity));
 }
 
 .p-3{
@@ -851,6 +851,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
   .md\:top-1{
     top: 0.25rem;
+  }
+
+  .md\:top-20{
+    top: 5rem;
   }
 
   .md\:col-span-6{

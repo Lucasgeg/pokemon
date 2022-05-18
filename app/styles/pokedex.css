@@ -202,6 +202,9 @@
   margin-left: auto;
   margin-right: auto;
 }
-.main_color{
-  background-color: rgb(250, 204, 21) ;
+.main_color {
+  background-color: rgb(250, 204, 21);
+}
+.lock {
+  opacity: 0.25;
 }
