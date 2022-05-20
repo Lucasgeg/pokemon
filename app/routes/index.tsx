@@ -13,6 +13,7 @@ import {
 } from "~/utils/users.server";
 import PokeCard from "~/components/PokeCard";
 import MyPokedexButton from "~/components/MyPokedexButton";
+import { Menu } from "~/components/Menu";
 
 ///////////////////////////////////////////TYPESCRIPT///////////////////////////////////////
 type Pokemon = {
@@ -65,7 +66,7 @@ const getPaginationInfo = (url: string | null) => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const { searchParams } = new URL(request.url);
-  const userId = await getUserId(request);
+  let userId = await getUserId(request);
 
   const limit = searchParams.get("limit");
   const offset = searchParams.get("offset");
@@ -139,15 +140,12 @@ export default function Index() {
     userId,
   } = useLoaderData<LoaderData>();
   const [search, setSearch] = useState("");
-  if (!userId) {
-    return false;
-  }
+
   return (
     <div className=" w-full flex flex-col font-comfortaa font-semibold ">
-      <Logout userName={userName} />
-      <MyPokedexButton />
+      <Menu userName={userName} />
 
-      <div className="border-8 border-red-600 rounded-full w-3/4 mx-auto header  bg-orange-200 text-lg mb-3 p-3 md:mt-10">
+      <div className="border-8 border-red-600 rounded-full w-3/4 mx-auto header  bg-orange-200 text-lg mb-3 p-3 mt-5 lg:mt-10">
         {userName ? (
           <h1 className="text-center">
             Hello{" "}
@@ -183,12 +181,6 @@ export default function Index() {
             catchedPokemons={catchedPokemons}
             pokemonId={null}
           />
-          /*  <PokemonCard
-            key={p.name}
-            {...p}
-            catchedPokemons={catchedPokemons}
-            userName={userName}
-          /> */
         ))}
       </ul>
       <div className="sub_Menu mt-5">

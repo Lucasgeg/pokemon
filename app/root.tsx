@@ -39,7 +39,7 @@ function Document({
         <title>{title}</title>
         <Links />
       </head>
-      <body id="body" className={`max-w-7xl mx-auto `}>
+      <body id="body" className={`max-w-7xl mx-auto bg-yellow-400 `}>
         {children}
         <Scripts />
         <LiveReload />

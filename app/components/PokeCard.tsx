@@ -6,7 +6,7 @@ import { PokeballLoading } from "./PokeBallLoading";
 
 type pokemon = {
   pokemonName: string;
-  userId: string;
+  userId: string | null;
   catchedPokemons: string[] | null | undefined;
   pokemonId: number | null;
 };
@@ -92,22 +92,24 @@ const PokeCard = (
           <Link to={`/pokedex/${pokemonName}`} className="mx-auto my-2">
             <div className={"button"}> Infos </div>
           </Link>
-          <div className="releaseHim mx-auto my-2">
-            <Form method="post">
-              <input type="hidden" name="userId" value={userId} />
-              <input type="hidden" name="pokemonId" value={res?.id} />
-              <input type="hidden" name="pokemonName" value={pokemonName} />
-              <button
-                name="_action"
-                value={hasBeenCatched ? `remove` : `add`}
-                className={`${submitting ? "button lock" : "button"}`}
-                type="submit"
-                disabled={submitting}
-              >
-                {hasBeenCatched ? "Realease him" : "Capture!"}
-              </button>
-            </Form>
-          </div>
+          {userId ? (
+            <div className="releaseHim mx-auto my-2">
+              <Form method="post">
+                <input type="hidden" name="userId" value={userId} />
+                <input type="hidden" name="pokemonId" value={res?.id} />
+                <input type="hidden" name="pokemonName" value={pokemonName} />
+                <button
+                  name="_action"
+                  value={hasBeenCatched ? `remove` : `add`}
+                  className={`${submitting ? "button lock" : "button"}`}
+                  type="submit"
+                  disabled={submitting}
+                >
+                  {hasBeenCatched ? "Realease him" : "Capture!"}
+                </button>
+              </Form>
+            </div>
+          ) : null}
         </li>
       )}
     </>
