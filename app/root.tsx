@@ -1,16 +1,11 @@
 import type { MetaFunction } from "@remix-run/node";
-import {
-  Links,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "@remix-run/react";
+import { Links, LiveReload, Meta, Outlet, Scripts } from "@remix-run/react";
 import vanillaStyle from "./styles/pokedex.css";
 import styles from "./styles/app.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import pikachuError from "./assets/pikachuError.png";
+import { ErrorMessage } from "./components/ErrorMessage";
 
 const queryClient = new QueryClient();
 
@@ -22,7 +17,7 @@ export function links() {
 }
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "New Remix App",
+  title: "Pokedex! Catch'em all!",
   viewport: "width=device-width,initial-scale=1",
 });
 function Document({
@@ -54,6 +49,14 @@ export default function App() {
         <Outlet />
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
+    </Document>
+  );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <Document title="Pika?">
+      <ErrorMessage error={error} />
     </Document>
   );
 }

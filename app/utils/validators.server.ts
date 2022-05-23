@@ -1,3 +1,5 @@
+import { prisma } from "./prisma.server";
+
 export const validateEmail = (email: string): string | undefined => {
   const validRegex =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -12,6 +14,6 @@ export const validatePassword = (password: string): string | undefined => {
     return "Password must be at least 5 characters";
   }
 };
-export const validateUserName = (username: string): string | undefined => {
+export const validateUserName = (username: string) => {
   if (username.length < 3) return "Username must be at least 3 characters";
 };

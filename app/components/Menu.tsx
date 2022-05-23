@@ -13,10 +13,9 @@ export const Menu = ({ userName }: Menu) => {
 
   const handleClickPokeballButton = (e: React.MouseEvent<HTMLElement>) => {
     setToggleOn(!toggleOn);
-    console.log(toggleOn);
   };
   return (
-    <nav className="fixed top-1/4 lg:absolute lg:w-full lg:top-0 z-10 lg:flex  ">
+    <nav className="fixed top-1/4 lg:absolute lg:w-full lg:top-0 lg:right-0 z-10 lg:flex  ">
       <img
         src={PokeballButton}
         alt="Bouton pokeball"
@@ -30,7 +29,7 @@ export const Menu = ({ userName }: Menu) => {
         `)}
       >
         <Logout userName={userName} />
-        <MyPokedexButton />
+        {userName ? <MyPokedexButton /> : null}
       </div>
     </nav>
   );

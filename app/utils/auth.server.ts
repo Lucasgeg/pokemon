@@ -25,15 +25,25 @@ export const register = async (form: Forms) => {
   const userExist = await prisma.user.count({
     where: { username: form.username },
   });
-
+  if (form.username.length < 3)
+    return json(
+      { usernameError: "Username must be at least 3 characters" },
+      { status: 400 }
+    );
+  if (form.password.length < 5)
+    return json(
+      { passwordError: "Password must be at least 5 characters" },
+      { status: 400 }
+    );
   if (userExist) {
     return json(
       {
-        error: "User already exist",
+        usernameError: "User already exist",
       },
       { status: 400 }
     );
   }
+
   const newUser = await createUser(form);
 
   if (!newUser) {
@@ -48,7 +58,10 @@ export const login = async (form: Forms) => {
   });
 
   if (!user || !(await bcrypt.compare(form.password, user.password))) {
-    return json({ error: "Erreur dans le formulaire de connection" });
+    return json(
+      { usernameError: "Invalid username or password" },
+      { status: 400 }
+    );
   }
   return createUserSession(user.id, "/");
 };
@@ -98,7 +111,7 @@ export async function getUser(request: Request) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, username: true, pokemonNames: true},
+      select: { id: true, username: true, pokemonNames: true },
     });
     return user;
   } catch {

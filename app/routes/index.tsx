@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useLoaderData } from "@remix-run/react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import Logout from "~/components/Logout";
+import { redirect } from "@remix-run/node";
 import { getUserId } from "~/utils/auth.server";
 import {
   addPokeObjecttoUser,
@@ -12,8 +12,8 @@ import {
   removePokemonFromUser,
 } from "~/utils/users.server";
 import PokeCard from "~/components/PokeCard";
-import MyPokedexButton from "~/components/MyPokedexButton";
 import { Menu } from "~/components/Menu";
+import { ErrorMessage } from "~/components/ErrorMessage";
 
 ///////////////////////////////////////////TYPESCRIPT///////////////////////////////////////
 type Pokemon = {
@@ -28,27 +28,19 @@ type Pokemon = {
 };
 type PokePagination = { offset: string | null; limit: string | null };
 type LoaderData = {
+  indexUrl: string;
   userId: string | null;
   pokemonList: Pokemon[];
-  currentPage: String;
+  currentPage: string;
   nextContext: PokePagination | null;
   previousContext: PokePagination | null;
   catchedPokemons: string[] | undefined | null;
   userName: string | undefined | null;
 };
-type PokemonDetailResponse = {
-  name: string;
-  id: number;
-  sprites: {
-    front_default: string;
-    other: {
-      home: { front_default: string };
-      dream_world: {
-        front_default: string;
-      };
-    };
-  };
-  types: [{ type: { name: string } }];
+
+//////////////////////////////////////////////ERROR BOUNDARY////////////////////////////////////
+export const ErrorBoundary = ({ error }: { error: Error }) => {
+  return <ErrorMessage error={error} />;
 };
 
 /////////////////////////////////////////////////////PAGINATION/////////////////////////////////
@@ -67,9 +59,11 @@ const getPaginationInfo = (url: string | null) => {
 export const loader: LoaderFunction = async ({ request }) => {
   const { searchParams } = new URL(request.url);
   let userId = await getUserId(request);
-
   const limit = searchParams.get("limit");
+
   const offset = searchParams.get("offset");
+  const indexUrl = offset ? `/?offset=${offset}` : "/";
+
   const currentPage = `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`;
   const {
     data: { results, next, previous },
@@ -89,6 +83,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const previousContext = getPaginationInfo(previous);
 
   const data: LoaderData = {
+    indexUrl,
     userId,
     userName,
     currentPage,
@@ -109,6 +104,7 @@ export const action: ActionFunction = async ({ request }) => {
   const pokemonId = Number(form.get("pokemonId"));
   const pokemonName = form.get("pokemonName");
   const action = form.get("_action");
+  const currentPage = form.get("currentPage");
 
   if (
     typeof userId !== "string" ||
@@ -119,14 +115,17 @@ export const action: ActionFunction = async ({ request }) => {
   }
   switch (action) {
     case "add": {
-      return await addPokeObjecttoUser(userId, pokemonName, pokemonId);
+      await addPokeObjecttoUser(userId, pokemonName, pokemonId);
+      break;
     }
     case "remove": {
-      return await removePokemonFromUser(userId, pokemonId, pokemonName);
+      await removePokemonFromUser(userId, pokemonId, pokemonName);
+      break;
     }
     default:
       throw new Error("Error on the action switch");
   }
+  return redirect(`${currentPage}`);
 };
 //////////////////////////////////////////////MAIN PAGE/////////////////////////////////////////////////////////////
 
@@ -138,6 +137,7 @@ export default function Index() {
     catchedPokemons,
     userName,
     userId,
+    indexUrl,
   } = useLoaderData<LoaderData>();
   const [search, setSearch] = useState("");
 
@@ -180,6 +180,7 @@ export default function Index() {
             key={p.id}
             catchedPokemons={catchedPokemons}
             pokemonId={null}
+            currentPage={indexUrl}
           />
         ))}
       </ul>

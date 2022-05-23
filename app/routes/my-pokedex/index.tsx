@@ -1,5 +1,7 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { ErrorMessage } from "~/components/ErrorMessage";
+import { Menu } from "~/components/Menu";
 import PokeCard from "~/components/PokeCard";
 import { getUser } from "~/utils/auth.server";
 import {
@@ -36,7 +38,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   };
   return json(data);
 };
-
+/////////////////////////////////////////////ERROR BOUNDARY/////////////////////////////////////////////////////////
+export const ErrorBoundary = ({ error }: { error: Error }) => {
+  return <ErrorMessage error={error} />;
+};
 /////////////////////////////////////////////ACTION/////////////////////////////////////////////////////////////////
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();

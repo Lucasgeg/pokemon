@@ -4,6 +4,10 @@ import { NavLink, useLoaderData, useParams } from "@remix-run/react";
 import axios from "axios";
 import clsx from "clsx";
 import { useState } from "react";
+import pikachuSearch from "~/assets/pikachuSearch.png";
+import { Menu } from "~/components/Menu";
+import { getUserId } from "~/utils/auth.server";
+import { getUserName } from "~/utils/users.server";
 
 type Pokemon = {
   name: string;
@@ -25,20 +29,25 @@ type Pokemon = {
 
 type LoaderData = {
   pokemonDetail: Pokemon;
+  userName: string | null | undefined;
 };
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const userId = await getUserId(request);
+  const userName = await getUserName(userId);
   const res = await axios.get(
     `https://pokeapi.co/api/v2/pokemon/${params.pokemonId}`
   );
+
   const pokemonDetail: Pokemon = res.data;
   const data: LoaderData = {
     pokemonDetail,
+    userName,
   };
   return json(data);
 };
 
 export default function PokemonById() {
-  const { pokemonDetail } = useLoaderData<LoaderData>();
+  const { pokemonDetail, userName } = useLoaderData<LoaderData>();
   const numberOfTypes = pokemonDetail.types.length;
   const numberOfAbilities = pokemonDetail.abilities.length;
   const handlePrev = () => {
@@ -47,13 +56,14 @@ export default function PokemonById() {
 
   return (
     <>
+      <Menu userName={userName} />
       <div
         className=" w-fit bg-amber-200 p-1 text-center my-3 border-2 border-white/25 rounded-lg cursor-pointer"
         onClick={handlePrev}
       >
         Previous
       </div>
-      <div className="border-8 border-red-600 rounded-full w-full header  bg-orange-200 text-lg mb-3 p-3 md:mt-10">
+      <div className="border-8 border-red-600 rounded-full w-3/4 mx-auto header  bg-orange-200 text-lg mb-3 p-3 md:mt-10">
         <h1 className="text-center ">
           Individual page of : <br />
           <span
@@ -140,18 +150,26 @@ export function ErrorBoundary() {
   const [search, setSearch] = useState("");
   return (
     <div className="error-container flex flex-col justify-center w-full">
-      <h1 className=" mx-auto my-5">
-        {`Error ! We didn't find pokemon "${params.pokemonId}", try an other one please `}
+      <h1 className=" border-8 border-red-600 rounded-full w-3/4 mx-auto header  bg-orange-200 text-lg mb-3 p-3 mt-5 lg:mt-10 text-center font-comfortaa">
+        {`Error ! We didn't find pokemon number "${params.pokemonId}", try an other one please `}
       </h1>
       <form className=" text-center mx-auto " action={`/pokedex/${search}`}>
         <input
           className=" text-center mx-auto my-5"
-          placeholder="Type a pokemon name or ID"
+          placeholder="Pokemon name or ID"
           onChange={(e) => setSearch(e.target.value)}
         />{" "}
         <br />
-        <input type="submit" className="my-5" value={"Search"} />
-        <NavLink to={"/pokedex"}> Home </NavLink>
+        <input type="submit" className="my-5 button" value={"Search"} />
+        <NavLink to={"/"} className="button">
+          {" "}
+          Home{" "}
+        </NavLink>
+        <img
+          src={pikachuSearch}
+          alt="picture of pikachu searching"
+          className="max-w-md"
+        />
       </form>
     </div>
   );

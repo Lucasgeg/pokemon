@@ -2,13 +2,17 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useState } from "react";
-import { Link } from "@remix-run/react";
+import { Link, useActionData } from "@remix-run/react";
 import { getUser, login, register } from "~/utils/auth.server";
 import type { Forms } from "~/utils/types.server";
 import { validatePassword, validateUserName } from "~/utils/validators.server";
+import { ErrorMessage } from "~/components/ErrorMessage";
+
+export const ErrorBoundary = ({ error }: { error: Error }) => {
+  return <ErrorMessage error={error} />;
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
-
   return (await getUser(request)) ? redirect("/") : null;
 };
 
@@ -23,35 +27,25 @@ export const action: ActionFunction = async ({ request }) => {
     typeof username !== "string" ||
     typeof password !== "string"
   ) {
-    return json({ error: "Invalid Form Data" }, { status: 400 });
+    return json({
+      errorMessage: `Form not submitted correctly`,
+    });
   }
-  const errors = {
-    username: validateUserName(username),
-    password: validatePassword(password),
-  };
-  if (Object.values(errors).some(Boolean))
-    return json(
-      {
-        errors,
-        fields: { username, password },
-        form: action,
-      },
-      { status: 400 }
-    );
   switch (action) {
     case "login": {
-      return login({ username, password });
+      return await login({ username, password });
     }
     case "register": {
       return await register({ username, password });
     }
     default:
-      return json({ error: "invalid form data" }, { status: 400 });
+      throw new Error("Unexpected Login Error");
   }
   //return await register({ username, password });
 };
 
 export default function Login() {
+  const actionData = useActionData();
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     field: string
@@ -64,6 +58,7 @@ export default function Login() {
     password: "",
   });
   const [action, setAction] = useState("login");
+
   return (
     <div className="flex flex-col justify-center items-center mt-40">
       <button
@@ -73,9 +68,7 @@ export default function Login() {
         {action === "login" ? "S'inscrire" : "Se connecter"}
       </button>
       {action == "login" ? (
-        <h1 className="text-center">
-          Connect and complete your pokedex!
-        </h1>
+        <h1 className="text-center">Connect and complete your pokedex!</h1>
       ) : (
         <h1 className="text-center">
           Subscribe and we offer you a free pokedex!
@@ -87,22 +80,32 @@ export default function Login() {
       >
         <label htmlFor="username">Username</label>
         <input
-          className="text-center"
+          className={`text-center ${
+            actionData ? "border-2 border-red-400" : ""
+          }`}
           type="text"
           id="username"
           name="username"
           value={formData.username}
           onChange={(e) => handleInputChange(e, "username")}
         />
+        <p className="text-white text-sm">
+          {actionData?.usernameError ? actionData?.usernameError : null}
+        </p>
         <label htmlFor="password">Password</label>
         <input
-          className="text-center"
+          className={`text-center ${
+            actionData ? "border-2 border-red-400 " : ""
+          }`}
           type="password"
           id="password"
           name="password"
           value={formData.password}
           onChange={(e) => handleInputChange(e, "password")}
         />
+        <p className="text-white text-sm">
+          {actionData?.passwordError ? actionData?.passwordError : null}
+        </p>
         <button
           type="submit"
           name="_action"
@@ -112,7 +115,7 @@ export default function Login() {
           {action == "login" ? "Se connecter" : "S'inscrire"}
         </button>
       </form>
-      <Link to={`/`} >I just want to take a look</Link>
+      <Link to={`/`}>I just want to take a look</Link>
     </div>
   );
 }

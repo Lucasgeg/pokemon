@@ -1,4 +1,10 @@
-import { Form, Link, useTransition } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  NavLink,
+  useLocation,
+  useTransition,
+} from "@remix-run/react";
 import axios from "axios";
 import { useQuery } from "react-query";
 import clsx from "clsx";
@@ -9,6 +15,7 @@ type pokemon = {
   userId: string | null;
   catchedPokemons: string[] | null | undefined;
   pokemonId: number | null;
+  currentPage: string;
 };
 
 type PokemonDetailResponse = {
@@ -27,7 +34,7 @@ type PokemonDetailResponse = {
 };
 
 const PokeCard = (
-  { pokemonName, userId, catchedPokemons, pokemonId }: pokemon,
+  { pokemonName, userId, catchedPokemons, pokemonId, currentPage }: pokemon,
   key: any
 ) => {
   const hasBeenCatched = pokemonName
@@ -49,7 +56,6 @@ const PokeCard = (
   let submitting =
     transition.state === "submitting" &&
     transition.submission.formData.get("pokemonName") == `${pokemonName}`;
-
   return (
     <>
       {isLoading ? (
@@ -89,7 +95,10 @@ const PokeCard = (
               </>
             )}
           </div>
-          <Link to={`/pokedex/${pokemonName}`} className="mx-auto my-2">
+          <Link
+            to={`/pokedex/${pokemonName ? pokemonName : pokemonId}`}
+            className="mx-auto my-2"
+          >
             <div className={"button"}> Infos </div>
           </Link>
           {userId ? (
@@ -98,6 +107,7 @@ const PokeCard = (
                 <input type="hidden" name="userId" value={userId} />
                 <input type="hidden" name="pokemonId" value={res?.id} />
                 <input type="hidden" name="pokemonName" value={pokemonName} />
+                <input type="hidden" name="currentPage" value={currentPage} />
                 <button
                   name="_action"
                   value={hasBeenCatched ? `remove` : `add`}
