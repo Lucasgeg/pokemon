@@ -1,10 +1,10 @@
-import type { LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { NavLink, useLoaderData, useParams } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import axios from "axios";
 import clsx from "clsx";
-import { useState } from "react";
-import pikachuSearch from "~/assets/pikachuSearch.png";
+
+import { ErrorMessage } from "~/components/ErrorMessage";
 import { Menu } from "~/components/Menu";
 import { getUserId } from "~/utils/auth.server";
 import { getUserName } from "~/utils/users.server";
@@ -28,10 +28,12 @@ type Pokemon = {
 };
 
 type LoaderData = {
+  url: string;
   pokemonDetail: Pokemon;
   userName: string | null | undefined;
 };
 export const loader: LoaderFunction = async ({ params, request }) => {
+  const url = new URL(request.url).pathname;
   const userId = await getUserId(request);
   const userName = await getUserName(userId);
   const res = await axios.get(
@@ -40,6 +42,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   const pokemonDetail: Pokemon = res.data;
   const data: LoaderData = {
+    url,
     pokemonDetail,
     userName,
   };
@@ -47,22 +50,12 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 export default function PokemonById() {
-  const { pokemonDetail, userName } = useLoaderData<LoaderData>();
+  const { pokemonDetail, userName, url } = useLoaderData<LoaderData>();
   const numberOfTypes = pokemonDetail.types.length;
   const numberOfAbilities = pokemonDetail.abilities.length;
-  const handlePrev = () => {
-    return history.back();
-  };
-
   return (
-    <>
-      <Menu userName={userName} />
-      <div
-        className=" w-fit bg-amber-200 p-1 text-center my-3 border-2 border-white/25 rounded-lg cursor-pointer"
-        onClick={handlePrev}
-      >
-        Previous
-      </div>
+    <div className="flex-col">
+      <Menu userName={userName} url={url} />
       <div className="border-8 border-red-600 rounded-full w-3/4 mx-auto header  bg-orange-200 text-lg mb-3 p-3 md:mt-10">
         <h1 className="text-center ">
           Individual page of : <br />
@@ -78,7 +71,7 @@ export default function PokemonById() {
       {/* Carte du Pokemon */}
       <div
         className={clsx(
-          "card rounded-3xl border-[10px] border-white/25 grid grid-cols-12 p-3 m-3 ",
+          "card rounded-3xl border-[10px] border-white/25 grid grid-cols-12 p-3 m-3 mt-20 ",
           pokemonDetail.types[0].type.name
         )}
       >
@@ -141,10 +134,10 @@ export default function PokemonById() {
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 }
-export function ErrorBoundary() {
+/* export function ErrorBoundary() {
   const params = useParams();
 
   const [search, setSearch] = useState("");
@@ -153,6 +146,7 @@ export function ErrorBoundary() {
       <h1 className=" border-8 border-red-600 rounded-full w-3/4 mx-auto header  bg-orange-200 text-lg mb-3 p-3 mt-5 lg:mt-10 text-center font-comfortaa">
         {`Error ! We didn't find pokemon number "${params.pokemonId}", try an other one please `}
       </h1>
+
       <form className=" text-center mx-auto " action={`/pokedex/${search}`}>
         <input
           className=" text-center mx-auto my-5"
@@ -173,4 +167,7 @@ export function ErrorBoundary() {
       </form>
     </div>
   );
-}
+} */
+export const ErrorBoundary = ({ error }: { error: Error }) => {
+  return <ErrorMessage error={error} />;
+};

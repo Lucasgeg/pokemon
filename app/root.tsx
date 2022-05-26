@@ -28,13 +28,13 @@ function Document({
   title?: string;
 }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <head>
         <Meta />
         <title>{title}</title>
         <Links />
       </head>
-      <body id="body" className={`max-w-7xl mx-auto bg-yellow-400 `}>
+      <body id="body" className={`max-w-7xl mx-auto h-full min-h-screen flex`}>
         {children}
         <Scripts />
         <LiveReload />

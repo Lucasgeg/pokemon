@@ -10,7 +10,7 @@ export const ErrorMessage = ({ error }: { error: Error }) => {
   };
 
   return (
-    <div className="">
+    <div className="flex flex-col justify-center items-center mx-auto">
       <div className="border-8 border-red-600 rounded-full w-3/4 mx-auto header  bg-orange-200 text-lg mb-3 p-3 mt-5 lg:mt-10 font-comfortaa text-center">
         <h1>Pikachu did a mistake!</h1>
         <p>

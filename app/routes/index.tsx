@@ -62,7 +62,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const limit = searchParams.get("limit");
 
   const offset = searchParams.get("offset");
-  const indexUrl = offset ? `/?offset=${offset}` : "/";
+  const indexUrl = offset ? `/?offset=${offset}` + `&` + `limit=${limit}` : "/";
 
   const currentPage = `https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`;
   const {
@@ -142,8 +142,8 @@ export default function Index() {
   const [search, setSearch] = useState("");
 
   return (
-    <div className=" w-full flex flex-col font-comfortaa font-semibold ">
-      <Menu userName={userName} />
+    <div className=" w-full flex flex-col font-comfortaa font-semibold">
+      <Menu userName={userName} url={indexUrl} />
 
       <div className="border-8 border-red-600 rounded-full w-3/4 mx-auto header  bg-orange-200 text-lg mb-3 p-3 mt-5 lg:mt-10">
         {userName ? (
@@ -177,7 +177,7 @@ export default function Index() {
           <PokeCard
             pokemonName={p.name}
             userId={userId}
-            key={p.id}
+            key={p.name}
             catchedPokemons={catchedPokemons}
             pokemonId={null}
             currentPage={indexUrl}

@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Link, useActionData } from "@remix-run/react";
 import { getUser, login, register } from "~/utils/auth.server";
 import type { Forms } from "~/utils/types.server";
-import { validatePassword, validateUserName } from "~/utils/validators.server";
 import { ErrorMessage } from "~/components/ErrorMessage";
+import pokedex from "~/assets/pokedex.png";
 
 export const ErrorBoundary = ({ error }: { error: Error }) => {
   return <ErrorMessage error={error} />;
@@ -36,10 +36,16 @@ export const action: ActionFunction = async ({ request }) => {
       return await login({ username, password });
     }
     case "register": {
+      if (!username || username.length < 3) {
+        return json(
+          { usernameError: "Username must be at least 3 characters" },
+          { status: 400 }
+        );
+      }
       return await register({ username, password });
     }
     default:
-      throw new Error("Unexpected Login Error");
+      throw new Error("Unexpected Login Action Error");
   }
   //return await register({ username, password });
 };
@@ -60,7 +66,11 @@ export default function Login() {
   const [action, setAction] = useState("login");
 
   return (
-    <div className="flex flex-col justify-center items-center mt-40">
+    <div className="flex flex-col justify-center items-center mx-auto w-full font-comfortaa">
+      <h1 className="font-pokemon text-6xl text-orange-400 mix-blend-multiply mb-10">
+        Pokedex Application!
+      </h1>
+      <img src={pokedex} alt="pokedex image" className="w-44" />
       <button
         onClick={() => setAction(action == "login" ? "register" : "login")}
         className="absolute top-8 right-8 rounded-xl bg-yellow-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
@@ -68,11 +78,11 @@ export default function Login() {
         {action === "login" ? "S'inscrire" : "Se connecter"}
       </button>
       {action == "login" ? (
-        <h1 className="text-center">Connect and complete your pokedex!</h1>
+        <h2 className="text-center">Connect and complete your pokedex!</h2>
       ) : (
-        <h1 className="text-center">
+        <h2 className="text-center">
           Subscribe and we offer you a free pokedex!
-        </h1>
+        </h2>
       )}
       <form
         method="POST"

@@ -34,6 +34,7 @@ export const getPokemonList = async (userId: string) => {
     where: { id: userId },
     select: { pokemonIds: true, pokemonNames: true },
   });
+
   return pokemonList;
 };
 export const userHaveThePokemon = async (

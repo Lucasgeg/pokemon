@@ -2,6 +2,7 @@ import {
   Form,
   Link,
   NavLink,
+  useFetcher,
   useLocation,
   useTransition,
 } from "@remix-run/react";
@@ -52,14 +53,16 @@ const PokeCard = (
   );
 
   const res = data?.data;
-  let transition = useTransition();
+  const fetcher = useFetcher();
   let submitting =
-    transition.state === "submitting" &&
-    transition.submission.formData.get("pokemonName") == `${pokemonName}`;
+    fetcher.state === "submitting" &&
+    fetcher.submission.formData.get("pokemonName") == `${pokemonName}`;
   return (
     <>
       {isLoading ? (
-        <PokeballLoading />
+        <li key={key}>
+          <PokeballLoading />
+        </li>
       ) : (
         <li
           key={key}
@@ -101,9 +104,10 @@ const PokeCard = (
           >
             <div className={"button"}> Infos </div>
           </Link>
+
           {userId ? (
             <div className="releaseHim mx-auto my-2">
-              <Form method="post">
+              <fetcher.Form method="post">
                 <input type="hidden" name="userId" value={userId} />
                 <input type="hidden" name="pokemonId" value={res?.id} />
                 <input type="hidden" name="pokemonName" value={pokemonName} />
@@ -117,7 +121,7 @@ const PokeCard = (
                 >
                   {hasBeenCatched ? "Realease him" : "Capture!"}
                 </button>
-              </Form>
+              </fetcher.Form>
             </div>
           ) : null}
         </li>

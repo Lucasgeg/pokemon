@@ -22,10 +22,11 @@ const storage = createCookieSessionStorage({
 
 //Create user
 export const register = async (form: Forms) => {
+  const usernameInput = form.username.toLowerCase().trim();
   const userExist = await prisma.user.count({
-    where: { username: form.username },
+    where: { username: usernameInput },
   });
-  if (form.username.length < 3)
+  if (usernameInput.length < 3 || !usernameInput)
     return json(
       { usernameError: "Username must be at least 3 characters" },
       { status: 400 }
@@ -53,8 +54,9 @@ export const register = async (form: Forms) => {
 };
 
 export const login = async (form: Forms) => {
+  const usernameInput = form.username.toLowerCase().trim();
   const user = await prisma.user.findUnique({
-    where: { username: form.username },
+    where: { username: usernameInput },
   });
 
   if (!user || !(await bcrypt.compare(form.password, user.password))) {
